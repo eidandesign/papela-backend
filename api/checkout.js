@@ -97,6 +97,6 @@ export default async function handler(req, res) {
     })
   } catch (error) {
     console.error('[checkout] Error:', error.message)
-    return res.status(500).json({ error: error.message })
+    return res.status(500).json({ error: 'Error al procesar el pago. Intenta de nuevo.' })
   }
 }
