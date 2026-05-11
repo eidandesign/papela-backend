@@ -19,6 +19,8 @@ export default async function handler(req, res) {
     taller_nombre,
     taller_id,
     monto,
+    monto_unitario,
+    cantidad,
     usuario_nombre,
     usuario_email,
     usuario_telefono,
@@ -28,6 +30,10 @@ export default async function handler(req, res) {
   if (!taller_nombre || !taller_id || !monto || !usuario_nombre || !usuario_email) {
     return res.status(400).json({ error: 'Faltan campos requeridos' })
   }
+
+  const cantidadNum = Number(cantidad) || 1
+  const precioUnitario = Number(monto_unitario) || Number(monto)
+  const montoTotal = precioUnitario * cantidadNum
 
   try {
     // 1. Guardar registro en Supabase con estado "pendiente"
@@ -39,7 +45,8 @@ export default async function handler(req, res) {
         usuario_nombre,
         usuario_email,
         usuario_telefono: usuario_telefono || null,
-        monto: Number(monto),
+        monto: montoTotal,
+        cantidad: cantidadNum,
         estado: 'pendiente',
       })
       .select()
@@ -54,8 +61,8 @@ export default async function handler(req, res) {
         items: [
           {
             title: taller_nombre,
-            quantity: 1,
-            unit_price: Number(monto),
+            quantity: cantidadNum,
+            unit_price: precioUnitario,
             currency_id: 'MXN',
           },
         ],
