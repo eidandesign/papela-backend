@@ -85,7 +85,6 @@ export default async function handler(req, res) {
   binary_mode: true,
   statement_descriptor: 'Papela Atelier',
   external_reference: registro.id,
-  notification_url: `${process.env.VERCEL_URL}/api/webhook`,
 },
     })
 
