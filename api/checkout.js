@@ -59,29 +59,34 @@ export default async function handler(req, res) {
     const preference = new Preference(mp)
     const mpResponse = await preference.create({
       body: {
-        items: [
-          {
-            title: taller_nombre,
-            quantity: cantidadNum,
-            unit_price: precioUnitario,
-            currency_id: 'MXN',
-          },
-        ],
-        payer: {
-          name: usuario_nombre,
-          email: usuario_email,
-        },
-        back_urls: {
-          success: `${process.env.SITE_URL}/confirmacion?estado=exitoso&ref=${registro.id}`,
-          failure: `${process.env.SITE_URL}/confirmacion?estado=fallido`,
-          pending: `${process.env.SITE_URL}/confirmacion?estado=pendiente`,
-        },
-        auto_return: 'approved',
-        // external_reference liga el pago con nuestro registro en Supabase
-        external_reference: registro.id,
-        // MP llamará a este endpoint cuando el pago se confirme
-        notification_url: `${process.env.VERCEL_URL}/api/webhook`,
-      },
+  items: [
+    {
+      id: taller_id,
+      title: taller_nombre,
+      description: `Taller: ${taller_nombre}`,
+      category_id: 'learnings',
+      quantity: cantidadNum,
+      unit_price: precioUnitario,
+      currency_id: 'MXN',
+    },
+  ],
+  payer: {
+    name: usuario_nombre.split(' ')[0],
+    surname: usuario_nombre.split(' ').slice(1).join(' ') || usuario_nombre,
+    email: usuario_email,
+    phone: { number: usuario_telefono || '' },
+  },
+  back_urls: {
+    success: `${process.env.SITE_URL}/confirmacion?estado=exitoso&ref=${registro.id}`,
+    failure: `${process.env.SITE_URL}/confirmacion?estado=fallido`,
+    pending: `${process.env.SITE_URL}/confirmacion?estado=pendiente`,
+  },
+  auto_return: 'approved',
+  binary_mode: true,
+  statement_descriptor: 'Papela Atelier',
+  external_reference: registro.id,
+  notification_url: `${process.env.VERCEL_URL}/api/webhook`,
+},
     })
 
     // 3. Guardar el preference_id en Supabase
